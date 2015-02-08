@@ -67,7 +67,11 @@ static int nonce_function_rfc6979(unsigned char *nonce32, const unsigned char *m
    unsigned int i;
    (void)data;
    secp256k1_rfc6979_hmac_sha256_initialize(&rng, key32, 32, msg32, 32);
-   for (i = 0; i <= counter; i++) {
+
+   /* We do not want to use "i <= counter" in the for loop because
+      then this function is not guaranteed to terminate. */
+   secp256k1_rfc6979_hmac_sha256_generate(&rng, nonce32, 32);
+   for (i = 0; i < counter; i++) {
        secp256k1_rfc6979_hmac_sha256_generate(&rng, nonce32, 32);
    }
    secp256k1_rfc6979_hmac_sha256_finalize(&rng);
